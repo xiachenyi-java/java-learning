@@ -1,0 +1,19 @@
+//public class 返回类 {
+//}
+//public [返回类型] 方法名(参数类型 参数名) {
+// ...
+//    return 返回值;  // 必须匹配返回类型
+//}返回类型是方法签名的一部分，声明了方法执行后会"返回"什么数据。调用者可以接收这个结果并使用。
+//public void sayHello() {
+//    System.out.println("Hello");
+//    return;  // 可省略，或用于提前结束方法
+//        }//方法不返回任何数据，仅执行操作。
+//public int add(int a, int b) {
+//    return a + b;  // 必须返回int类型
+//}//返回具体的值（int, double, boolean等）
+//public Person createPerson(String name, int age) {
+//    Person p = new Person();
+//    p.name = name;
+//    p.age = age;
+//    return p;  // 返回对象的引用
+//}返回对象的引用
