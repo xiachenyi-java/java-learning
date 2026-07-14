@@ -16,7 +16,7 @@ public class T1 {
         //thread.start();
         //thread.start();
         //为什么只能 start 一次？
-        //// Thread.start() 源码逻辑：
+        // Thread.start() 源码逻辑：
         //public synchronized void start() {
         //    if (threadStatus != 0)  // 检查线程状态
         //        throw new IllegalThreadStateException();
