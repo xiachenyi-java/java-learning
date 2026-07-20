@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>图书管理器</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: 50px auto; padding: 20px; }
+        h1 { color: #333; }
+        .box { border: 1px solid #ddd; padding: 15px; margin-bottom: 20px; border-radius: 5px; }
+        input[type="text"] { padding: 8px; width: 200px; margin-right: 10px; }
+        button { padding: 8px 15px; cursor: pointer; margin-right: 5px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        .btn-add { background-color: #4CAF50; color: white; border: none; }
+        .btn-edit { background-color: #2196F3; color: white; border: none; }
+        .btn-del { background-color: #f44336; color: white; border: none; }
+        #msg { margin-top: 10px; padding: 10px; border-radius: 4px; display: none; }
+        .success { background-color: #d4edda; color: #155724; }
+        .error { background-color: #f8d7da; color: #721c24; }
+    </style>
+</head>
+<body>
+
+<h1>📚 图书管理器</h1>
+
+<!-- 添加区域 -->
+<div class="box">
+    <h3>添加新书</h3>
+    <input type="text" id="bookName" placeholder="输入书名">
+    <button class="btn-add" onclick="addBook()">添加</button>
+</div>
+
+<!-- 消息提示 -->
+<div id="msg"></div>
+
+<!-- 列表区域 -->
+<div class="box">
+    <h3>所有图书</h3>
+    <button onclick="loadBooks()" style="margin-bottom: 10px;">🔄 刷新列表</button>
+    <table>
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>书名</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody id="bookList">
+        <tr><td colspan="3" style="text-align:center;color:#999;">点击"刷新列表"加载数据</td></tr>
+        </tbody>
+    </table>
+</div>
+
+<script>
+    // 后端地址
+    const API = 'http://localhost:8080/books';
+
+    // 显示消息
+    function showMsg(text, isError) {
+        const msg = document.getElementById('msg');
+        msg.textContent = text;
+        msg.className = isError ? 'error' : 'success';
+        msg.style.display = 'block';
+        setTimeout(() => msg.style.display = 'none', 3000);
+    }
+
+    // 加载所有书
+    function loadBooks() {
+        fetch(API)
+            .then(res => res.json())
+            .then(data => {
+                const tbody = document.getElementById('bookList');
+                if (data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;color:#999;">暂无图书</td></tr>';
+                    return;
+                }
+                tbody.innerHTML = data.map(book => `
+                    <tr>
+                        <td>${book.id}</td>
+                        <td>${book.name}</td>
+                        <td>
+                            <button class="btn-edit" onclick="editBook(${book.id}, '${book.name}')">修改</button>
+                            <button class="btn-del" onclick="deleteBook(${book.id})">删除</button>
+                        </td>
+                    </tr>
+                `).join('');
+            })
+            .catch(err => showMsg('加载失败：' + err, true));
+    }
+
+    // 添加书
+    function addBook() {
+        const name = document.getElementById('bookName').value.trim();
+        if (!name) {
+            showMsg('请输入书名！', true);
+            return;
+        }
+        fetch(API, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name: name })
+        })
+        .then(res => res.text())
+        .then(text => {
+            showMsg(text);
+            document.getElementById('bookName').value = '';
+            loadBooks();
+        })
+        .catch(err => showMsg('添加失败：' + err, true));
+    }
+
+    // 修改书
+    function editBook(id, oldName) {
+        const newName = prompt('请输入新书名：', oldName);
+        if (newName === null || newName.trim() === '') return;
+
+        fetch(`${API}/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name: newName.trim() })
+        })
+        .then(res => res.text())
+        .then(text => {
+            showMsg(text);
+            loadBooks();
+        })
+        .catch(err => showMsg('修改失败：' + err, true));
+    }
+
+    // 删除书
+    function deleteBook(id) {
+        if (!confirm('确定要删除 ID=' + id + ' 的书吗？')) return;
+
+        fetch(`${API}/${id}`, { method: 'DELETE' })
+            .then(res => res.text())
+            .then(text => {
+                showMsg(text);
+                loadBooks();
+            })
+            .catch(err => showMsg('删除失败：' + err, true));
+    }
+
+    // 页面加载时自动刷新
+    window.onload = loadBooks;
+</script>
+
+</body>
+</html>

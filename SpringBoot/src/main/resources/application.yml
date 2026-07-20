@@ -1,0 +1,40 @@
+spring:
+  profiles:
+    active: test
+
+---
+#开发
+spring:
+  config:
+    activate:
+      on-profile: dev
+server:
+  port: 8081
+
+
+---
+#生产
+server:
+  port: 8082
+spring:
+  config.activate.on-profile: pro
+
+---
+#测试
+server:
+  port: 8083
+spring:
+  config.activate.on-profile: test
+
+
+
+
+企业:
+  name: 葫芦娃
+  age: 16
+  tel: 4006184000
+  yw:
+    - Java
+    - 前端
+    - 大数据
+

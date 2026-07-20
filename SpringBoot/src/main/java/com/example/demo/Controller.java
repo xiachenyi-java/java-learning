@@ -1,5 +1,6 @@
 package com.example.demo;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 //"这个类里的方法，都是用来接收浏览器请求的，而且返回的数据直接给浏览器看（不是跳转页面）。"
 public class Controller {
+    private int i =0;
     @GetMapping("/hello")
     //"当浏览器用 GET 方式访问 /hello 时，执行下面的 hello() 方法。"
     //@PostMapping
@@ -19,6 +21,8 @@ public class Controller {
     //GET = 去服务器"拿"东西，数据放在 URL 里，适合查询。
     //POST = 给服务器"送"东西，数据放在请求体里，适合提交。
     public String hello(){
+        i++;
+        System.out.println(i);
         return "Hello, Spring Boot!";
     }
 }
@@ -44,7 +48,6 @@ GET	获取	从服务器读取数据	打开网页、查看商品列表、搜索
 POST	提交	向服务器提交数据	登录、注册、提交表单、下单
 GET 请求的特点
 1. 数据放在 URL 里（肉眼可见）
-plain
 http://localhost:8080/hello?name=张三&age=20
 ? 后面就是 GET 请求的参数，任何人都能看到。
 2. 有长度限制
@@ -55,7 +58,6 @@ URL 太长会被浏览器截断，所以 GET 不适合传大文件。
 你刷新 100 次 http://localhost:8080/hello，结果都是 Hello, Spring Boot!，不会把服务器搞坏。
 POST 请求的特点（对比）
 1. 数据放在请求体里（URL 上看不到）
-plain
 POST http://localhost:8080/login
 请求体（Body）：{"username":"admin","password":"123456"}
 2. 没有长度限制
