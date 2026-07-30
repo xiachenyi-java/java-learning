@@ -1,71 +1,54 @@
 package com.example2.demo2;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-/**
- * 夏辰义
- * 2026/7/2018:16
- */
 @RestController
-@RequestMapping("/books")// 所有方法前缀都是 /books
+@RequestMapping("/books")
 public class BookController {
-    //用map方法
-    private Map<Integer,Book> books =new HashMap<>();
-    private int nextID = 1;//ID自动生成
 
-    //获取所有书的名字
+    @Autowired
+    private BookRepository bookRepository;
+
+    // 获取所有书
     @GetMapping
-    public List<Book> getALL(){
-        return new ArrayList<>(books.values());
+    public List<Book> getAll() {
+        return bookRepository.findAll();
     }
 
-    //找一本书
+    // 找一本书
     @GetMapping("/{id}")
-    public Book getOne(@PathVariable Integer id){
-        return books.get(id);
+    public Book getOne(@PathVariable Integer id) {
+        return bookRepository.findById(id).orElse(null);
     }
 
-    //加书
+    // 加书
     @PostMapping
-    public String aad(@RequestBody Book book){
-        book.setId(nextID++);
-        books.put(book.getId(), book);
-        return "添加成功" + book.getId();
+    public String add(@RequestBody Book book) {
+        Book saved = bookRepository.save(book);
+        return "添加成功，ID=" + saved.getId();
     }
 
+    // 修改书
     @PutMapping("/{id}")
-    public String update(@PathVariable Integer id,@RequestBody Book book){
-        Book existing = books.get(id);
-        if (existing != null){
-            existing.setName(book.getName());
-            return "修改成功";
+    public String update(@PathVariable Integer id, @RequestBody Book book) {
+        if (!bookRepository.existsById(id)) {
+            return "书不存在";
         }
-        return "书不存在";
+        book.setId(id);
+        bookRepository.save(book);
+        return "修改成功";
     }
 
+    // 删除书
     @DeleteMapping("/{id}")
-    public String delete(@PathVariable Integer id){
-        Book existing = books.get(id);
-        if (existing != null){
-            books.remove(id);
-            nextID--;
-            return "删除成功";
+    public String delete(@PathVariable Integer id) {
+        if (!bookRepository.existsById(id)) {
+            return "书不存在";
         }
-        return "书不存在";
+        bookRepository.deleteById(id);
+        return "删除成功";
     }
 }
-/*
-错误的落后的代码
-     for (int i = 0;i <= nextID;i++){
-            if (id.equals(books.get(i))){
-                books.values() = book.getName();
-            }
-        }
- */

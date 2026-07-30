@@ -46,7 +46,6 @@ enterprise:
 src/main/resources/
 └── application.yml           # 配置文件
 七、Maven 核心概念
-表格
 概念	作用
 <parent>	版本管家，统一管理依赖版本
 <dependencies>	购物清单，声明项目需要什么

@@ -8,7 +8,6 @@ public class 知识 {
 }
 /*
 1️⃣ localhost = "本机地址"
-表格
 地址	含义	谁能访问
 localhost	你自己的电脑	只有你自己
 127.0.0.1	也是本机地址（数字版 localhost）	只有你自己

@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 //"这个类里的方法，都是用来接收浏览器请求的，而且返回的数据直接给浏览器看（不是跳转页面）。"
 public class Controller {
-    private int i =0;
+    private int i = 0;
     @GetMapping("/hello")
     //"当浏览器用 GET 方式访问 /hello 时，执行下面的 hello() 方法。"
     //@PostMapping
