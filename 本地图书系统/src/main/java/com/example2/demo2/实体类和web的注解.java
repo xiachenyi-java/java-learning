@@ -4,7 +4,7 @@ package com.example2.demo2;
  * 夏辰义
  * 2026/8/915:35
  */
-public class 知识2 {
+public class 实体类和web的注解 {
 }
 /*
 1. 实体类（JPA 层）—— 5 个

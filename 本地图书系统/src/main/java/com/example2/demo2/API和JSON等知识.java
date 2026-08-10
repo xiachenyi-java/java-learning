@@ -4,7 +4,7 @@ package com.example2.demo2;
  * 夏辰义
  * 2026/8/914:48
  */
-public class 知识 {
+public class API和JSON等知识 {
 }
 /*
 API应用程序编程接口

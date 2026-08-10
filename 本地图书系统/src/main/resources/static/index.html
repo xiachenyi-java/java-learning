@@ -15,7 +15,6 @@
             color: #333;
         }
 
-        /* 主容器 - 毛玻璃效果 */
         .container {
             max-width: 900px;
             margin: 0 auto;
@@ -30,7 +29,6 @@
             animation: fadeInDown 0.8s ease;
         }
 
-        /* 卡片统一样式 */
         .glass-card {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
@@ -58,7 +56,6 @@
             font-weight: 600;
         }
 
-        /* 输入框美化 */
         input[type="text"] {
             padding: 12px 16px;
             border: 2px solid #e2e8f0;
@@ -77,7 +74,6 @@
             transform: translateY(-1px);
         }
 
-        /* 按钮基础样式 */
         button {
             padding: 10px 20px;
             border: none;
@@ -95,7 +91,6 @@
 
         button:active { transform: scale(0.95); }
 
-        /* 按钮颜色 */
         .btn-add {
             background: linear-gradient(135deg, #48bb78, #38a169);
             color: white;
@@ -142,7 +137,6 @@
         }
         .btn-del:hover { transform: scale(1.05); }
 
-        /* 表格美化 */
         .table-wrapper {
             overflow-x: auto;
             border-radius: 12px;
@@ -182,7 +176,6 @@
             opacity: 0;
         }
 
-        /* 逐行延迟动画 */
         tr:nth-child(1) { animation-delay: 0.05s; }
         tr:nth-child(2) { animation-delay: 0.1s; }
         tr:nth-child(3) { animation-delay: 0.15s; }
@@ -213,7 +206,6 @@
             font-family: 'Courier New', monospace;
         }
 
-        /* 消息提示 - 滑入动画 */
         #msg {
             position: fixed;
             top: 20px;
@@ -249,7 +241,6 @@
             border: 1px solid #fc8181;
         }
 
-        /* 加载动画 */
         .loading {
             display: flex;
             justify-content: center;
@@ -268,7 +259,6 @@
             margin-right: 12px;
         }
 
-        /* 空状态 */
         .empty-state {
             text-align: center;
             padding: 50px;
@@ -280,7 +270,6 @@
             opacity: 0.5;
         }
 
-        /* 分页美化 */
         .pagination {
             margin-top: 24px;
             display: flex;
@@ -329,7 +318,6 @@
             font-weight: 500;
         }
 
-        /* 动画关键帧 */
         @keyframes fadeInDown {
             from { opacity: 0; transform: translateY(-30px); }
             to { opacity: 1; transform: translateY(0); }
@@ -349,7 +337,6 @@
             to { transform: rotate(360deg); }
         }
 
-        /* 搜索框区域布局 */
         .search-row {
             display: flex;
             gap: 10px;
@@ -357,7 +344,6 @@
             align-items: center;
         }
 
-        /* 响应式 */
         @media (max-width: 600px) {
             h1 { font-size: 1.8rem; }
             input[type="text"] { width: 100%; margin-bottom: 10px; }
@@ -372,7 +358,6 @@
 <div class="container">
     <h1>📚 图书管理器</h1>
 
-    <!-- 添加区域 -->
     <div class="glass-card">
         <div class="card-title">✨ 添加新书</div>
         <div class="search-row">
@@ -381,7 +366,6 @@
         </div>
     </div>
 
-    <!-- 查找区域 -->
     <div class="glass-card">
         <div class="card-title">🔍 查找图书</div>
         <div class="search-row">
@@ -391,10 +375,8 @@
         </div>
     </div>
 
-    <!-- 消息提示 -->
     <div id="msg"></div>
 
-    <!-- 列表区域 -->
     <div class="glass-card">
         <div class="card-title">📖 图书列表</div>
         <div class="table-wrapper">
@@ -413,7 +395,6 @@
             </table>
         </div>
 
-        <!-- 分页控件 -->
         <div class="pagination" id="pagination"></div>
         <div class="page-info" id="pageInfo"></div>
     </div>
@@ -426,38 +407,29 @@
     let currentPage = 1;
     const PAGE_SIZE = 5;
 
-    // 显示消息（带动画）
     function showMsg(text, isError) {
         const msg = document.getElementById('msg');
         msg.textContent = (isError ? '❌ ' : '✅ ') + text;
         msg.className = isError ? 'error' : 'success';
         msg.classList.add('show');
-
-        // 清除之前的定时器
         if (msg._timer) clearTimeout(msg._timer);
-
         msg._timer = setTimeout(() => {
             msg.classList.remove('show');
         }, 3000);
     }
 
-    // 渲染当前页
     function renderPage() {
         const totalPages = Math.ceil(allBooks.length / PAGE_SIZE);
         if (currentPage > totalPages) currentPage = Math.max(1, totalPages);
-
         const start = (currentPage - 1) * PAGE_SIZE;
         const end = start + PAGE_SIZE;
         const pageBooks = allBooks.slice(start, end);
-
         renderTable(pageBooks);
         renderPagination(totalPages);
-
         document.getElementById('pageInfo').textContent =
             allBooks.length > 0 ? `📊 共 ${allBooks.length} 本图书 | 第 ${currentPage}/${Math.max(1,totalPages)} 页` : '';
     }
 
-    // 渲染表格（带动画）
     function renderTable(books) {
         const tbody = document.getElementById('bookList');
         if (books.length === 0) {
@@ -477,21 +449,17 @@
         `).join('');
     }
 
-    // 渲染分页
     function renderPagination(totalPages) {
         const container = document.getElementById('pagination');
         if (totalPages <= 1) {
             container.innerHTML = '';
             return;
         }
-
         let html = '';
         html += `<button onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>◀</button>`;
-
         for (let i = 1; i <= totalPages; i++) {
             html += `<button onclick="changePage(${i})" class="${i === currentPage ? 'active' : ''}">${i}</button>`;
         }
-
         html += `<button onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>▶</button>`;
         container.innerHTML = html;
     }
@@ -501,10 +469,8 @@
         renderPage();
     }
 
-    // 加载所有书
     function loadBooks() {
         document.getElementById('bookList').innerHTML = '<tr><td colspan="4" class="loading"><div class="spinner"></div>正在加载...</td></tr>';
-
         fetch(API)
             .then(res => res.json())
             .then(data => {
@@ -515,16 +481,13 @@
             .catch(err => showMsg('加载失败：' + err, true));
     }
 
-    // 搜索图书
     function searchBook() {
         const keyword = document.getElementById('searchKeyword').value.trim();
         if (!keyword) {
             showMsg('请输入书名或数据库ID', true);
             return;
         }
-
         document.getElementById('bookList').innerHTML = '<tr><td colspan="4" class="loading"><div class="spinner"></div>正在搜索...</td></tr>';
-
         fetch(API)
             .then(res => res.json())
             .then(data => {
@@ -533,14 +496,12 @@
                     const matchId = !isNaN(keyword) && book.id == keyword;
                     return matchName || matchId;
                 });
-
                 if (results.length === 0) {
                     showMsg('没有找到相关图书', true);
                     allBooks = [];
                     renderPage();
                     return;
                 }
-
                 if (results.length === 1) {
                     const b = results[0];
                     setTimeout(() => {
@@ -549,7 +510,6 @@
                 } else {
                     showMsg(`找到 ${results.length} 本相关图书`, false);
                 }
-
                 allBooks = results;
                 currentPage = 1;
                 renderPage();
@@ -557,7 +517,6 @@
             .catch(err => showMsg('搜索失败：' + err, true));
     }
 
-    // 添加书
     function addBook() {
         const name = document.getElementById('bookName').value.trim();
         if (!name) {
@@ -578,11 +537,9 @@
         .catch(err => showMsg('添加失败：' + err, true));
     }
 
-    // 修改书
     function editBook(id, oldName) {
         const newName = prompt('请输入新书名：', oldName);
         if (newName === null || newName.trim() === '') return;
-
         fetch(`${API}/${id}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
@@ -596,10 +553,8 @@
         .catch(err => showMsg('修改失败：' + err, true));
     }
 
-    // 删除书
     function deleteBook(id) {
         if (!confirm('确定要删除这本书吗？')) return;
-
         fetch(`${API}/${id}`, { method: 'DELETE' })
             .then(res => res.text())
             .then(text => {
@@ -609,7 +564,6 @@
             .catch(err => showMsg('删除失败：' + err, true));
     }
 
-    // 页面加载
     window.onload = loadBooks;
 </script>
 
