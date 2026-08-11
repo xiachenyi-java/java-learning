@@ -2,6 +2,7 @@ package com.example2.demo2.Controller;
 
 import com.example2.demo2.Entity.Book;
 import com.example2.demo2.Service.BookService;
+import com.example2.demo2.common.Result;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,34 +23,33 @@ public class BookController {
     }
     // 获取所有书
     @GetMapping
-    public List<Book> getAll() {
-       return bookService.findAll();
+    public Result<List<Book>> getAll() {
+       return Result.success(bookService.findAll());
     }
 
     // 找一本书
     @GetMapping("/{id}")
-    public Book getOne(@PathVariable Integer id) {
-      return bookService.findById(id);
+    public Result<Book> getOne(@PathVariable Integer id) {
+      return Result.success(bookService.findById(id));
     }
 
     // 加书
     @PostMapping
-    public String add(@RequestBody String name) {
+    public Result<Book> add(@RequestBody String name) {
      Book saved = bookService.add(name);
-     return "添加成功，ID=" + saved.getDisplayOrder();
+     return Result.success(saved);
     }
 
     // 修改书
     @PutMapping("/{id}")
-    public String update(@PathVariable Integer id, @RequestBody String name) {
-      bookService.update(id,name);
-      return "修改成功";
+    public Result<Book> update(@PathVariable Integer id, @RequestBody String name) {
+      return Result.success(bookService.update(id,name));
     }
 
     // 删除书
     @DeleteMapping("/{id}")
-    public String delete(@PathVariable Integer id) {
-     bookService.delete(id);
-        return "删除成功";
+    public Result<Void> delete(@PathVariable Integer id) {
+        bookService.delete(id);
+        return Result.success();
     }
 }

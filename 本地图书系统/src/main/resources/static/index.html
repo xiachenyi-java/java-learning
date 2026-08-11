@@ -473,10 +473,12 @@
         document.getElementById('bookList').innerHTML = '<tr><td colspan="4" class="loading"><div class="spinner"></div>正在加载...</td></tr>';
         fetch(API)
             .then(res => res.json())
-            .then(data => {
-                allBooks = data;
+            .then(res => {
+            if(res.code == 200){
+               allBooks = res.data;
                 currentPage = 1;
                 renderPage();
+             }
             })
             .catch(err => showMsg('加载失败：' + err, true));
     }
@@ -490,8 +492,12 @@
         document.getElementById('bookList').innerHTML = '<tr><td colspan="4" class="loading"><div class="spinner"></div>正在搜索...</td></tr>';
         fetch(API)
             .then(res => res.json())
-            .then(data => {
-                const results = data.filter(book => {
+            .then(res => {
+               if (res.code !== 200) {
+               showMsg(res.msg, true);
+               return;
+               }
+                const results = res.data.filter(book => {
                     const matchName = book.name.toLowerCase().includes(keyword.toLowerCase());
                     const matchId = !isNaN(keyword) && book.id == keyword;
                     return matchName || matchId;
@@ -528,11 +534,15 @@
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ name: name })
         })
-        .then(res => res.text())
-        .then(text => {
-            showMsg(text, false);
-            document.getElementById('bookName').value = '';
-            loadBooks();
+        .then(res => res.json())
+        .then(res => {
+              if (res.code === 200) {
+              showMsg('添加成功', false);  // ← 自己写提示，不再从后端取 text
+              document.getElementById('bookName').value = '';
+              loadBooks();
+              } else {
+              showMsg(res.msg, true);
+           }
         })
         .catch(err => showMsg('添加失败：' + err, true));
     }
@@ -545,10 +555,14 @@
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ name: newName.trim() })
         })
-        .then(res => res.text())
-        .then(text => {
-            showMsg(text, false);
-            loadBooks();
+        .then(res => res.json())
+        .then(res => {
+             if (res.code === 200) {
+              showMsg('修改成功', false);
+             loadBooks();
+             } else {
+             showMsg(res.msg, true);
+             }
         })
         .catch(err => showMsg('修改失败：' + err, true));
     }
@@ -556,10 +570,14 @@
     function deleteBook(id) {
         if (!confirm('确定要删除这本书吗？')) return;
         fetch(`${API}/${id}`, { method: 'DELETE' })
-            .then(res => res.text())
-            .then(text => {
-                showMsg(text, false);
-                loadBooks();
+            .then(res => res.json())
+            .then(res => {
+                  if (res.code === 200) {
+                  showMsg('删除成功', false);
+                  loadBooks();
+                  } else {
+                  showMsg(res.msg, true);
+                  }
             })
             .catch(err => showMsg('删除失败：' + err, true));
     }

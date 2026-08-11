@@ -21,10 +21,12 @@ public class BookService {
     public BookService(BookRepository bookRepository){
         this.bookRepository = bookRepository;
     }//构造器
+    //构造器注入：Spring 会自动把 BookRepository 的实例传进来并赋值。
+    //这是 Spring 推荐的注入方式，比 @Autowired 字段注入更好（利于测试、避免循环依赖）。
 
     // 获取所有书
     public List<Book> findAll() {
-        return bookRepository.findAll();
+        return bookRepository.findAllByOrderByDisplayOrderAsc();
         //方法名不叫 getAll，叫 findAll。因为 Service 不关心 HTTP，它只关心"查找"
     }
 
@@ -40,6 +42,10 @@ public class BookService {
     // 修改书
     public Book update(Integer id ,String name){
         Book book = bookRepository.findById(id).orElseThrow(() -> new RuntimeException("书不存在"));//找到书
+        //bookRepository.findById(id) 返回什么？
+        //返回的是 Optional<Book>，不是直接返回 Book
+        //.orElseThrow(...) 是什么意思？
+        //"如果盒子是空的，就抛出异常；如果有书，就把书拿出来。
         book.setName(name);
         return bookRepository.save(book);//返回改好的书
     }
