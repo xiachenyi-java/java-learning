@@ -2,6 +2,7 @@ package com.example2.demo2.Service;
 
 import com.example2.demo2.Entity.Book;
 import com.example2.demo2.Repository.BookRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
@@ -13,16 +14,12 @@ import java.util.List;
  */
 @Service
 //只穿这一件衣服，不要穿 @RestController
+@RequiredArgsConstructor
+//自动为所有 final 字段生成构造器。
 public class BookService {
 
 
     private final BookRepository bookRepository;
-
-    public BookService(BookRepository bookRepository){
-        this.bookRepository = bookRepository;
-    }//构造器
-    //构造器注入：Spring 会自动把 BookRepository 的实例传进来并赋值。
-    //这是 Spring 推荐的注入方式，比 @Autowired 字段注入更好（利于测试、避免循环依赖）。
 
     // 获取所有书
     public List<Book> findAll() {

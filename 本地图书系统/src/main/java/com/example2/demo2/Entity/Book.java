@@ -1,6 +1,7 @@
 package com.example2.demo2.Entity;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
 /**
  * 夏辰义
@@ -10,6 +11,13 @@ import jakarta.persistence.*;
 //告诉 Spring："这是一个数据库实体类"。加了 @Entity，JPA 才会把这个类和数据库表对应起来。
 @Table(name = "book")
 //指定这个实体对应的数据库表名叫 book。如果不写，默认会用类名 Book 作为表名。
+@Data
+//@Data 是 Lombok 的"全家桶"注解，它会自动生成：
+//getter
+//setter
+//toString
+//equals
+//hashCode
 public class Book {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,27 +36,4 @@ public class Book {
     @Column(nullable = false)
     private Integer displayOrder;
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public void setDisplayOrder(Integer displayOrder) {
-        this.displayOrder = displayOrder;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public Integer getDisplayOrder() {
-        return displayOrder;
-    }
 }

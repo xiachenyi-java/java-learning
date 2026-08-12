@@ -3,6 +3,7 @@ package com.example2.demo2.Controller;
 import com.example2.demo2.Entity.Book;
 import com.example2.demo2.Service.BookService;
 import com.example2.demo2.common.Result;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,13 +15,11 @@ import java.util.List;
  */
 @RequestMapping("/books")
 //给这个控制器设置一个基础路径。下面所有接口的 URL 前面都要加上 /books。
+@RequiredArgsConstructor
 public class BookController {
 
     private final BookService bookService;
 
-    public BookController(BookService bookService) {
-        this.bookService = bookService;
-    }
     // 获取所有书
     @GetMapping
     public Result<List<Book>> getAll() {
