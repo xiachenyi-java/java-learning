@@ -3,7 +3,9 @@ package com.example2.demo2.Controller;
 import com.example2.demo2.Entity.Book;
 import com.example2.demo2.Service.BookService;
 import com.example2.demo2.common.Result;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.Value;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -34,15 +36,15 @@ public class BookController {
 
     // 加书
     @PostMapping
-    public Result<Book> add(@RequestBody String name) {
-     Book saved = bookService.add(name);
+    public Result<Book> add(@RequestBody @Valid Book book) {
+     Book saved = bookService.add(book.getName());
      return Result.success(saved);
     }
 
     // 修改书
     @PutMapping("/{id}")
-    public Result<Book> update(@PathVariable Integer id, @RequestBody String name) {
-      return Result.success(bookService.update(id,name));
+    public Result<Book> update(@PathVariable Integer id, @RequestBody @Valid Book book) {
+        return Result.success(bookService.update(id, book.getName()));
     }
 
     // 删除书

@@ -549,7 +549,10 @@
 
     function editBook(id, oldName) {
         const newName = prompt('请输入新书名：', oldName);
-        if (newName === null || newName.trim() === '') return;
+       if (newName === null || newName.trim() === '') {
+    showMsg('书名不能为空', true);
+    return;
+}
         fetch(`${API}/${id}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },

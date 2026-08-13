@@ -1,4 +1,4 @@
-package com.example2.demo2;
+package com.study.backend;
 
 /**
  * 夏辰义
