@@ -28,16 +28,11 @@ public class Book {
     @GeneratedValue(strategy = GenerationType.IDENTITY)：主键由数据库自动生成（MySQL 的自增 ID）。每次插入新数据，数据库会自动给 id 赋值。
     Integer：主键类型用包装类，因为数据库里的 ID 可能是 null（还没生成时）。
      */
-    @NotBlank(message = "书名不能为空")
     @Column(nullable = false)
     private String name;
     /*
     @Column(nullable = false)：数据库里 name 字段不允许为空。
     String name：书名，对应数据库的 VARCHAR 类型。
-    @NotBlank 是什么意思？
-不能是 null
-不能是空字符串 ""
-不能全是空格 "   "
      */
     @Column(nullable = false)
     private Integer displayOrder;

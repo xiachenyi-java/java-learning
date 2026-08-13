@@ -1,5 +1,6 @@
 package com.example2.demo2.Controller;
 
+import com.example2.demo2.Dto.BookDTO;
 import com.example2.demo2.Entity.Book;
 import com.example2.demo2.Service.BookService;
 import com.example2.demo2.common.Result;
@@ -36,14 +37,14 @@ public class BookController {
 
     // 加书
     @PostMapping
-    public Result<Book> add(@RequestBody @Valid Book book) {
+    public Result<Book> add(@RequestBody @Valid BookDTO book) {
      Book saved = bookService.add(book.getName());
      return Result.success(saved);
     }
 
     // 修改书
     @PutMapping("/{id}")
-    public Result<Book> update(@PathVariable Integer id, @RequestBody @Valid Book book) {
+    public Result<Book> update(@PathVariable Integer id, @RequestBody @Valid BookDTO book) {
         return Result.success(bookService.update(id, book.getName()));
     }
 

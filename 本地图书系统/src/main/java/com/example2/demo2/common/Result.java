@@ -1,9 +1,12 @@
 package com.example2.demo2.common;
 
+import lombok.Data;
+
 /**
  * 夏辰义
  * 2026/8/1121:44
  */
+@Data
 public class Result<T> {
     private Integer code;
     private String msg;
@@ -30,29 +33,5 @@ public class Result<T> {
         tResult.setCode(500);
         tResult.setMsg(msg);
         return tResult;
-    }
-
-    public String getMsg() {
-        return msg;
-    }
-
-    public Integer getCode() {
-        return code;
-    }
-
-    public T getData() {
-        return data;
-    }
-
-    public void setCode(Integer code) {
-        this.code = code;
-    }
-
-    public void setData(T data) {
-        this.data = data;
-    }
-
-    public void setMsg(String msg) {
-        this.msg = msg;
     }
 }
