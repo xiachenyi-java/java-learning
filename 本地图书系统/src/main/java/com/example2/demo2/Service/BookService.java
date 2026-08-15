@@ -4,6 +4,7 @@ import com.example2.demo2.Entity.Book;
 import com.example2.demo2.Repository.BookRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -16,6 +17,8 @@ import java.util.List;
  * 夏辰义
  * 2026/8/1020:50
  */
+@Slf4j
+//@Slf4j 会自动给这个类生成一个 log 对象，你直接用 log.info(...) 就行
 @Service
 //只穿这一件衣服，不要穿 @RestController
 @RequiredArgsConstructor
@@ -33,6 +36,7 @@ public class BookService {
 
     // 加书
     public Book add(String name) {// ← 只接收一个 String，不接收 Book 实体
+        log.info("添加图书: name={}",name);
         Integer max = bookRepository.findMaxDisplayOrder();
         Book book = new Book();
         book.setName(name);
@@ -54,6 +58,7 @@ public class BookService {
     //删除书
     @Transactional//给删除加一个事务，防止删除一半数据库崩了
     public void delete(Integer id){
+        log.info("删除图书: id={}",id);
         Book book = bookRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("书不存在"));
         bookRepository.delete(book);
@@ -71,6 +76,9 @@ public class BookService {
     }
 
     public Book findById(Integer id) {
+        log.debug("查询图书: id={}", id);  // ← 用 debug 级别
+        //原因：后者在日志级别设为 WARN 时，字符串拼接已经执行了，
+        // 浪费性能。前者用占位符 {}，只有真正打印时才拼接
         return bookRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("书不存在"));
     }
