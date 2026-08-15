@@ -7,6 +7,7 @@ import com.example2.demo2.common.Result;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,14 +26,22 @@ public class BookController {
 
     // 获取所有书
     @GetMapping
-    public Result<List<Book>> getAll() {
-       return Result.success(bookService.findAll());
+    public Result<Page<Book>> getAll(@RequestParam(defaultValue = "1")
+                                     int page, @RequestParam(defaultValue = "5")
+                                     int size
+                                     ) {
+       return Result.success(bookService.findPage(page,size));
     }
 
     // 找一本书
     @GetMapping("/{id}")
     public Result<Book> getOne(@PathVariable Integer id) {
       return Result.success(bookService.findById(id));
+    }
+
+    @GetMapping("/search")
+    public Result<List<Book>> search(@RequestParam String keyword){
+        return Result.success(bookService.search(keyword));
     }
 
     // 加书

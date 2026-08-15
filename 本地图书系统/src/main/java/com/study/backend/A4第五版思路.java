@@ -4,7 +4,7 @@ package com.study.backend;
  * 夏辰义
  * 2026/8/1216:13
  */
-public class 第五版思路 {
+public class A4第五版思路 {
 }
 /*
 ✂️ 用"自动代笔秘书"理解 Lombok

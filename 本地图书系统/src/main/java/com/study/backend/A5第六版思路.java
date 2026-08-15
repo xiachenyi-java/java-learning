@@ -4,7 +4,7 @@ package com.study.backend;
  * 夏辰义
  * 2026/8/1314:52
  */
-public class 第六版思路 {
+public class A5第六版思路 {
 }
 /*
 🛂 用"机场安检"理解参数校验

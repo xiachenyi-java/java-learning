@@ -4,7 +4,7 @@ package com.study.backend;
  * 夏辰义
  * 2026/8/1200:09
  */
-public class 第三版思路 {
+public class A2第三版思路 {
 }
 /*
 📦 用"快递包裹"理解统一返回格式

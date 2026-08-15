@@ -142,6 +142,8 @@
             border-radius: 12px;
             border: 1px solid #e2e8f0;
             margin-top: 16px;
+            max-height: 420px;
+            overflow-y: auto;
         }
 
         table {
@@ -160,6 +162,9 @@
             font-size: 14px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
         }
 
         th:first-child { border-radius: 12px 0 0 0; }
@@ -271,11 +276,15 @@
         }
 
         .pagination {
-            margin-top: 24px;
             display: flex;
             justify-content: center;
             align-items: center;
             gap: 8px;
+            padding: 16px 0 8px;
+            background: white;
+            border-top: 1px solid #e2e8f0;
+            position: sticky;
+            bottom: 0;
         }
 
         .pagination button {
@@ -313,9 +322,10 @@
         .page-info {
             text-align: center;
             color: #718096;
-            margin-top: 12px;
             font-size: 13px;
             font-weight: 500;
+            padding-bottom: 12px;
+            background: white;
         }
 
         @keyframes fadeInDown {
@@ -393,10 +403,9 @@
                 <tr><td colspan="4" class="empty-state"><div class="empty-state-icon">📭</div>点击"显示全部"加载数据</td></tr>
                 </tbody>
             </table>
+            <div class="pagination" id="pagination"></div>
+            <div class="page-info" id="pageInfo"></div>
         </div>
-
-        <div class="pagination" id="pagination"></div>
-        <div class="page-info" id="pageInfo"></div>
     </div>
 </div>
 
@@ -405,7 +414,10 @@
 
     let allBooks = [];
     let currentPage = 1;
+    let totalPages = 1;
+    let totalElements = 0;
     const PAGE_SIZE = 5;
+    let isSearchMode = false;
 
     function showMsg(text, isError) {
         const msg = document.getElementById('msg');
@@ -419,15 +431,27 @@
     }
 
     function renderPage() {
-        const totalPages = Math.ceil(allBooks.length / PAGE_SIZE);
-        if (currentPage > totalPages) currentPage = Math.max(1, totalPages);
-        const start = (currentPage - 1) * PAGE_SIZE;
-        const end = start + PAGE_SIZE;
-        const pageBooks = allBooks.slice(start, end);
+        let pageBooks;
+        let displayTotalPages;
+
+        if (isSearchMode) {
+            displayTotalPages = Math.ceil(allBooks.length / PAGE_SIZE);
+            if (currentPage > displayTotalPages) currentPage = Math.max(1, displayTotalPages);
+            const start = (currentPage - 1) * PAGE_SIZE;
+            const end = start + PAGE_SIZE;
+            pageBooks = allBooks.slice(start, end);
+            document.getElementById('pageInfo').textContent =
+                allBooks.length > 0 ? `📊 共 ${allBooks.length} 本图书 | 第 ${currentPage}/${Math.max(1, displayTotalPages)} 页` : '';
+        } else {
+            displayTotalPages = totalPages;
+            if (currentPage > displayTotalPages) currentPage = Math.max(1, displayTotalPages);
+            pageBooks = allBooks;
+            document.getElementById('pageInfo').textContent =
+                totalElements > 0 ? `📊 共 ${totalElements} 本图书 | 第 ${currentPage}/${Math.max(1, displayTotalPages)} 页` : '';
+        }
+
         renderTable(pageBooks);
-        renderPagination(totalPages);
-        document.getElementById('pageInfo').textContent =
-            allBooks.length > 0 ? `📊 共 ${allBooks.length} 本图书 | 第 ${currentPage}/${Math.max(1,totalPages)} 页` : '';
+        renderPagination(displayTotalPages);
     }
 
     function renderTable(books) {
@@ -455,30 +479,59 @@
             container.innerHTML = '';
             return;
         }
+
         let html = '';
         html += `<button onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>◀</button>`;
+
+        const delta = 2;
+        const range = [];
+
         for (let i = 1; i <= totalPages; i++) {
-            html += `<button onclick="changePage(${i})" class="${i === currentPage ? 'active' : ''}">${i}</button>`;
+            if (i === 1 || i === totalPages || (i >= currentPage - delta && i <= currentPage + delta)) {
+                range.push(i);
+            }
         }
+
+        let l;
+        for (let i of range) {
+            if (l) {
+                if (i - l === 2) {
+                    html += `<button onclick="changePage(${l + 1})">${l + 1}</button>`;
+                } else if (i - l !== 1) {
+                    html += `<button disabled style="cursor:default;background:none;border:none;box-shadow:none;">...</button>`;
+                }
+            }
+            html += `<button onclick="changePage(${i})" class="${i === currentPage ? 'active' : ''}">${i}</button>`;
+            l = i;
+        }
+
         html += `<button onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>▶</button>`;
         container.innerHTML = html;
     }
 
     function changePage(page) {
         currentPage = page;
-        renderPage();
+        if (isSearchMode) {
+            renderPage();
+        } else {
+            loadBooks();
+        }
     }
 
     function loadBooks() {
+        isSearchMode = false;
         document.getElementById('bookList').innerHTML = '<tr><td colspan="4" class="loading"><div class="spinner"></div>正在加载...</td></tr>';
-        fetch(API)
+        fetch(`${API}?page=${currentPage}&size=${PAGE_SIZE}`)
             .then(res => res.json())
             .then(res => {
-            if(res.code == 200){
-               allBooks = res.data;
-                currentPage = 1;
-                renderPage();
-             }
+                if (res.code === 200) {
+                    allBooks = res.data.content;
+                    totalPages = res.data.totalPages;
+                    totalElements = res.data.totalElements;
+                    renderPage();
+                } else {
+                    showMsg(res.msg, true);
+                }
             })
             .catch(err => showMsg('加载失败：' + err, true));
     }
@@ -486,39 +539,24 @@
     function searchBook() {
         const keyword = document.getElementById('searchKeyword').value.trim();
         if (!keyword) {
-            showMsg('请输入书名或数据库ID', true);
+            showMsg('请输入书名', true);
             return;
         }
+
         document.getElementById('bookList').innerHTML = '<tr><td colspan="4" class="loading"><div class="spinner"></div>正在搜索...</td></tr>';
-        fetch(API)
+
+        fetch(`${API}/search?keyword=${encodeURIComponent(keyword)}`)
             .then(res => res.json())
             .then(res => {
-               if (res.code !== 200) {
-               showMsg(res.msg, true);
-               return;
-               }
-                const results = res.data.filter(book => {
-                    const matchName = book.name.toLowerCase().includes(keyword.toLowerCase());
-                    const matchId = !isNaN(keyword) && book.id == keyword;
-                    return matchName || matchId;
-                });
-                if (results.length === 0) {
-                    showMsg('没有找到相关图书', true);
-                    allBooks = [];
-                    renderPage();
+                if (res.code !== 200) {
+                    showMsg(res.msg, true);
                     return;
                 }
-                if (results.length === 1) {
-                    const b = results[0];
-                    setTimeout(() => {
-                        alert(`📖 图书详情\n━━━━━━━━━━━━\n序号：${b.displayOrder}\n数据库ID：${b.id}\n书名：《${b.name}》`);
-                    }, 300);
-                } else {
-                    showMsg(`找到 ${results.length} 本相关图书`, false);
-                }
-                allBooks = results;
+                isSearchMode = true;
+                allBooks = res.data;
                 currentPage = 1;
                 renderPage();
+                showMsg(`找到 ${res.data.length} 本相关图书`, false);
             })
             .catch(err => showMsg('搜索失败：' + err, true));
     }
@@ -536,23 +574,23 @@
         })
         .then(res => res.json())
         .then(res => {
-              if (res.code === 200) {
-              showMsg('添加成功', false);  // ← 自己写提示，不再从后端取 text
-              document.getElementById('bookName').value = '';
-              loadBooks();
-              } else {
-              showMsg(res.msg, true);
-           }
+            if (res.code === 200) {
+                showMsg('添加成功', false);
+                document.getElementById('bookName').value = '';
+                loadBooks();
+            } else {
+                showMsg(res.msg, true);
+            }
         })
         .catch(err => showMsg('添加失败：' + err, true));
     }
 
     function editBook(id, oldName) {
         const newName = prompt('请输入新书名：', oldName);
-       if (newName === null || newName.trim() === '') {
-    showMsg('书名不能为空', true);
-    return;
-}
+        if (newName === null || newName.trim() === '') {
+            showMsg('书名不能为空', true);
+            return;
+        }
         fetch(`${API}/${id}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
@@ -560,12 +598,12 @@
         })
         .then(res => res.json())
         .then(res => {
-             if (res.code === 200) {
-              showMsg('修改成功', false);
-             loadBooks();
-             } else {
-             showMsg(res.msg, true);
-             }
+            if (res.code === 200) {
+                showMsg('修改成功', false);
+                loadBooks();
+            } else {
+                showMsg(res.msg, true);
+            }
         })
         .catch(err => showMsg('修改失败：' + err, true));
     }
@@ -575,12 +613,12 @@
         fetch(`${API}/${id}`, { method: 'DELETE' })
             .then(res => res.json())
             .then(res => {
-                  if (res.code === 200) {
-                  showMsg('删除成功', false);
-                  loadBooks();
-                  } else {
-                  showMsg(res.msg, true);
-                  }
+                if (res.code === 200) {
+                    showMsg('删除成功', false);
+                    loadBooks();
+                } else {
+                    showMsg(res.msg, true);
+                }
             })
             .catch(err => showMsg('删除失败：' + err, true));
     }

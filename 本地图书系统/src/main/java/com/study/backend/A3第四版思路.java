@@ -4,7 +4,7 @@ package com.study.backend;
  * 夏辰义
  * 2026/8/1213:58
  */
-public class 第四版思路 {
+public class A3第四版思路 {
 }
 /*
 🧯 用"大楼消防系统"理解全局异常处理

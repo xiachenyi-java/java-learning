@@ -4,7 +4,7 @@ package com.study.backend;
  * 夏辰义
  * 2026/8/1322:00
  */
-public class 第七版思路 {
+public class A6第七版思路 {
 }
 /*
 📋 用"访客登记表"理解 DTO

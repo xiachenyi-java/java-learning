@@ -1,6 +1,8 @@
 package com.example2.demo2.Repository;
 
 import com.example2.demo2.Entity.Book;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -22,5 +24,9 @@ public interface BookRepository extends JpaRepository<Book,Integer> {
     //ByOrderBy = 按...排序
     //DisplayOrder = 你的属性名
     //Asc = 升序（从小到大）
+
+    List<Book>findByNameContaining(String keyword);
+
+    Page<Book> findAllByOrderByDisplayOrderAsc(Pageable pageable);
 
 }

@@ -3,6 +3,9 @@ package com.example2.demo2.Service;
 import com.example2.demo2.Entity.Book;
 import com.example2.demo2.Repository.BookRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
@@ -65,4 +68,14 @@ public class BookService {
         return bookRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("书不存在"));
     }
+
+    public List<Book> search(String keyword){
+        return bookRepository.findByNameContaining(keyword);
+    }
+
+    public Page<Book> findPage(int page ,int size){
+        Pageable pageable = PageRequest.of(page - 1,size);
+        return bookRepository.findAllByOrderByDisplayOrderAsc(pageable);
+    }
+
 }

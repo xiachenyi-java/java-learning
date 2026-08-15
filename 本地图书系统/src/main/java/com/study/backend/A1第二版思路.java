@@ -4,7 +4,7 @@ package com.study.backend;
  * 夏辰义
  * 2026/8/1123:50
  */
-public class 第二版思路 {
+public class A1第二版思路 {
 }
 /*
 用"餐厅"理解你的四层架构
