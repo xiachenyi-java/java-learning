@@ -2,6 +2,7 @@ package com.example2.demo2.Service;
 
 import com.example2.demo2.Entity.Book;
 import com.example2.demo2.Repository.BookRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -51,6 +52,7 @@ public class BookService {
     }
 
     //删除书
+    @Transactional//给删除加一个事务，防止删除一半数据库崩了
     public void delete(Integer id){
         Book book = bookRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("书不存在"));
@@ -62,6 +64,10 @@ public class BookService {
             books.get(i).setDisplayOrder(i + 1);
         }
         bookRepository.saveAll(books);  // ← 用 saveAll 代替循环 save
+
+        //========临时事务回滚========
+        //throw new RuntimeException("测试事务回滚");
+        //==========================
     }
 
     public Book findById(Integer id) {

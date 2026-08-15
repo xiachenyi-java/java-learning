@@ -39,6 +39,7 @@ public class BookController {
       return Result.success(bookService.findById(id));
     }
 
+    //模糊查询
     @GetMapping("/search")
     public Result<List<Book>> search(@RequestParam String keyword){
         return Result.success(bookService.search(keyword));
