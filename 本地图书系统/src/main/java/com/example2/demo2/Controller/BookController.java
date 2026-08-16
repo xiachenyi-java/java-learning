@@ -4,6 +4,8 @@ import com.example2.demo2.Dto.BookDTO;
 import com.example2.demo2.Entity.Book;
 import com.example2.demo2.Service.BookService;
 import com.example2.demo2.common.Result;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
@@ -12,6 +14,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+
+@Tag(name = "图书管理")
 @RestController
 /*
 组合注解，相当于 @Controller + @ResponseBody。
@@ -25,6 +29,7 @@ public class BookController {
     private final BookService bookService;
 
     // 获取所有书
+    @Operation(summary = "获取图书列表")
     @GetMapping
     public Result<Page<Book>> getAll(@RequestParam(defaultValue = "1")
                                      int page, @RequestParam(defaultValue = "5")
@@ -34,18 +39,21 @@ public class BookController {
     }
 
     // 找一本书
+    @Operation(summary = "找一本书")
     @GetMapping("/{id}")
     public Result<Book> getOne(@PathVariable Integer id) {
       return Result.success(bookService.findById(id));
     }
 
     //模糊查询
+    @Operation(summary = "搜索图书")
     @GetMapping("/search")
     public Result<List<Book>> search(@RequestParam String keyword){
         return Result.success(bookService.search(keyword));
     }
 
     // 加书
+    @Operation(summary = "添加图书")
     @PostMapping
     public Result<Book> add(@RequestBody @Valid BookDTO book) {
      Book saved = bookService.add(book.getName());
@@ -53,12 +61,14 @@ public class BookController {
     }
 
     // 修改书
+    @Operation(summary = "修改图书")
     @PutMapping("/{id}")
     public Result<Book> update(@PathVariable Integer id, @RequestBody @Valid BookDTO book) {
         return Result.success(bookService.update(id, book.getName()));
     }
 
     // 删除书
+    @Operation(summary = "删除图书")
     @DeleteMapping("/{id}")
     public Result<Void> delete(@PathVariable Integer id) {
         bookService.delete(id);
