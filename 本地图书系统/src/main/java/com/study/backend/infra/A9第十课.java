@@ -1,4 +1,4 @@
-package com.study.backend;
+package com.study.backend.infra;
 
 /**
  * 夏辰义

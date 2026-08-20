@@ -1,5 +1,6 @@
 package com.example2.demo2.service;
 
+import com.example2.demo2.dto.UserRegisterDTO;
 import com.example2.demo2.entity.User;
 import com.example2.demo2.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,15 +21,18 @@ public class UserService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    public User addUser(String username,String rawPassword){
-        log.info("注册用户: username={}",username);
+    public User register(UserRegisterDTO dto){
+        if (userRepository.findByUsername(dto.getUsername()).isPresent()){
+            throw new RuntimeException("用户名已存在");
+        }
+        log.info("注册用户: username={}",dto.getUsername());
 
         //创建实体
         User user = new User();
-        user.setUsername(username);
+        user.setUsername(dto.getUsername());
 
         //加密密码
-        String hashed =bCryptPasswordEncoder.encode(rawPassword);
+        String hashed =bCryptPasswordEncoder.encode(dto.getPassword());
         user.setPasswordHash(hashed);
 
         return userRepository.save(user);

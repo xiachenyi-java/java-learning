@@ -1,4 +1,4 @@
-package com.study.backend;
+package com.study.backend.auth;
 
 /**
  * 夏辰义
