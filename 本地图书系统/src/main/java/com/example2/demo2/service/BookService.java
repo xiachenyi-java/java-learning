@@ -1,14 +1,13 @@
-package com.example2.demo2.Service;
+package com.example2.demo2.service;
 
-import com.example2.demo2.Entity.Book;
-import com.example2.demo2.Repository.BookRepository;
+import com.example2.demo2.entity.Book;
+import com.example2.demo2.repository.BookRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

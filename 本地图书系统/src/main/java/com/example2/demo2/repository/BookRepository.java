@@ -1,6 +1,6 @@
-package com.example2.demo2.Repository;
+package com.example2.demo2.repository;
 
-import com.example2.demo2.Entity.Book;
+import com.example2.demo2.entity.Book;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

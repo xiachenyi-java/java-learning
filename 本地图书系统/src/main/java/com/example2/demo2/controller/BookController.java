@@ -1,13 +1,16 @@
-package com.example2.demo2.Controller;
+package com.example2.demo2.controller;
 
-import com.example2.demo2.Dto.BookDTO;
-import com.example2.demo2.Entity.Book;
-import com.example2.demo2.Service.BookService;
+import com.example2.demo2.dto.BookDTO;
+import com.example2.demo2.entity.Book;
+import com.example2.demo2.entity.User;
+import com.example2.demo2.service.BookService;
 import com.example2.demo2.common.Result;
+import com.example2.demo2.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,6 +29,7 @@ import java.util.List;
 public class BookController {
 
     private final BookService bookService;
+
 
     // 获取所有书
     @Operation(summary = "获取图书列表")
@@ -73,4 +77,5 @@ public class BookController {
         bookService.delete(id);
         return Result.success();
     }
+
 }
