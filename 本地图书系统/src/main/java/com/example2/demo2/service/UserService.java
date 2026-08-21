@@ -1,9 +1,11 @@
 package com.example2.demo2.service;
 
+import com.example2.demo2.common.JwtUtil;
 import com.example2.demo2.dto.LoginDTO;
 import com.example2.demo2.dto.UserRegisterDTO;
 import com.example2.demo2.entity.User;
 import com.example2.demo2.repository.UserRepository;
+import com.example2.demo2.vo.LoginVO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -21,6 +23,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final JwtUtil jwtUtil;
 
     public User register(UserRegisterDTO dto){
         if (userRepository.findByUsername(dto.getUsername()).isPresent()){
@@ -39,7 +42,7 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public User login(LoginDTO dto){
+    public LoginVO login(LoginDTO dto){
         //账号是否存在
         if (userRepository.findByUsername(dto.getUsername()).isEmpty()){
             throw new RuntimeException("用户名或密码错误");
@@ -47,12 +50,19 @@ public class UserService {
         User user = userRepository.findByUsername(dto.getUsername()).orElse(null);
 
         //密码是否正确
-        if (bCryptPasswordEncoder.matches(dto.getPassword(), user.getPasswordHash())){
-            user.setPasswordHash(null);
-            return user;
-        }else {
+        if (!(bCryptPasswordEncoder.matches(dto.getPassword(), user.getPasswordHash()))){
+
             throw new RuntimeException("用户名或密码错误");
         }
+        //生成token
+        String token = jwtUtil.generateToken(user.getId(), user.getUsername());
+        //清除敏感信息
+        user.setPasswordHash(null);
+        // 创建 LoginVO，塞入 token 和 userInfo
+        LoginVO loginVO = new LoginVO();
+        loginVO.setToken(token);
+        loginVO.setUserInfo(user);
+        return loginVO;
     }
 
 }

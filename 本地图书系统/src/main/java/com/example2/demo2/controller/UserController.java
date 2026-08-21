@@ -5,6 +5,7 @@ import com.example2.demo2.dto.LoginDTO;
 import com.example2.demo2.dto.UserRegisterDTO;
 import com.example2.demo2.entity.User;
 import com.example2.demo2.service.UserService;
+import com.example2.demo2.vo.LoginVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -33,7 +34,8 @@ public class UserController {
 
     @Operation(summary = "用户登陆")
     @PostMapping("/login")
-    public Result<User> login(@RequestBody @Valid LoginDTO dto){
+    public Result<LoginVO> login(@RequestBody @Valid LoginDTO dto){
+
         return Result.success(userService.login(dto));
     }
 }
