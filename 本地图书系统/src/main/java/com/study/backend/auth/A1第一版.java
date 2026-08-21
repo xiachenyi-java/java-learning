@@ -4,7 +4,7 @@ package com.study.backend.auth;
  * 夏辰义
  * 2026/8/2019:45
  */
-public class 第一版 {
+public class A1第一版 {
 }
 /*
 密码安全加密总结

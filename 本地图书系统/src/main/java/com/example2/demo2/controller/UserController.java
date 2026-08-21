@@ -1,6 +1,7 @@
 package com.example2.demo2.controller;
 
 import com.example2.demo2.common.Result;
+import com.example2.demo2.dto.LoginDTO;
 import com.example2.demo2.dto.UserRegisterDTO;
 import com.example2.demo2.entity.User;
 import com.example2.demo2.service.UserService;
@@ -28,5 +29,11 @@ public class UserController {
     @PostMapping("/register")
     public Result<User> register(@RequestBody @Valid UserRegisterDTO dto){
         return Result.success(userService.register(dto));
+    }
+
+    @Operation(summary = "用户登陆")
+    @PostMapping("/login")
+    public Result<User> login(@RequestBody @Valid LoginDTO dto){
+        return Result.success(userService.login(dto));
     }
 }

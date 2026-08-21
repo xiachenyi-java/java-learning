@@ -1,5 +1,6 @@
 package com.example2.demo2.service;
 
+import com.example2.demo2.dto.LoginDTO;
 import com.example2.demo2.dto.UserRegisterDTO;
 import com.example2.demo2.entity.User;
 import com.example2.demo2.repository.UserRepository;
@@ -37,4 +38,21 @@ public class UserService {
 
         return userRepository.save(user);
     }
+
+    public User login(LoginDTO dto){
+        //账号是否存在
+        if (userRepository.findByUsername(dto.getUsername()).isEmpty()){
+            throw new RuntimeException("用户名或密码错误");
+        }
+        User user = userRepository.findByUsername(dto.getUsername()).orElse(null);
+
+        //密码是否正确
+        if (bCryptPasswordEncoder.matches(dto.getPassword(), user.getPasswordHash())){
+            user.setPasswordHash(null);
+            return user;
+        }else {
+            throw new RuntimeException("用户名或密码错误");
+        }
+    }
+
 }
