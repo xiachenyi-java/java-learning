@@ -8,6 +8,7 @@ import com.example2.demo2.service.BookService;
 import com.example2.demo2.common.Result;
 import com.example2.demo2.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 
+@SecurityRequirement(name = "BearerAuth")
 @Tag(name = "图书管理")
 @RestController
 /*

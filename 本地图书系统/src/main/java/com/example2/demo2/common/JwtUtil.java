@@ -3,6 +3,7 @@ package com.example2.demo2.common;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
@@ -14,22 +15,23 @@ import java.util.Date;
  */
 @Component
 public class JwtUtil {
-    // 签名密钥，至少32个字符（256位），太短会报错
-    private static final String SECRET = "your-256-bit-secret-key-for-jwt-demo-1234";
-    // 7天过期，单位是毫秒
-    // 1000 * 60 * 60 * 24 * 7 = 604800000
-    private static final long EXPIRATION = 604800000;
+    @Value("${jwt.secret}")
+    private String secret;
+
+    @Value("${jwt.expiration}")
+    private long expiration;
+
 
 
     // 把字符串密钥转换成 jjwt 需要的 SecretKey 对象
     private SecretKey getKey(){
-        return Keys.hmacShaKeyFor(SECRET.getBytes(StandardCharsets.UTF_8));
+        return Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
     }
 
     //生成令牌
     public String generateToken(Integer userId,String username, String role){
         Date now = new Date();
-        Date expiryDate = new Date(now.getTime() + EXPIRATION);
+        Date expiryDate = new Date(now.getTime() + expiration);
 
         return Jwts.builder()
                 .subject(String.valueOf(userId))          // 【Payload】主题，放用户ID
