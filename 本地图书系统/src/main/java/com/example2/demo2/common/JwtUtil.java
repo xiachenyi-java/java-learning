@@ -27,13 +27,14 @@ public class JwtUtil {
     }
 
     //生成令牌
-    public String generateToken(Integer userId,String username){
+    public String generateToken(Integer userId,String username, String role){
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + EXPIRATION);
 
         return Jwts.builder()
                 .subject(String.valueOf(userId))          // 【Payload】主题，放用户ID
                 .claim("username", username)           // 【Payload】自定义数据，放用户名
+                .claim("role",role)
                 .issuedAt(now)                            // 【Payload】签发时间
                 .expiration(expiryDate)                   // 【Payload】过期时间
                 .signWith(getKey(), Jwts.SIG.HS256)       // 【Signature】签名：密钥 + 算法
@@ -49,6 +50,7 @@ public class JwtUtil {
                 .getPayload();                  // 拿到 Payload 部分
     }
 
+    //提取token信息
     public Integer getUserIdFromToken(String token) {
         Claims claims = parseToken(token);
         return Integer.valueOf(claims.getSubject());

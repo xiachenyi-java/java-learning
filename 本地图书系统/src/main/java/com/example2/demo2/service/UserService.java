@@ -1,7 +1,9 @@
 package com.example2.demo2.service;
 
 import com.example2.demo2.common.JwtUtil;
+import com.example2.demo2.common.UserContext;
 import com.example2.demo2.dto.LoginDTO;
+import com.example2.demo2.dto.UserContextDTO;
 import com.example2.demo2.dto.UserRegisterDTO;
 import com.example2.demo2.entity.User;
 import com.example2.demo2.repository.UserRepository;
@@ -33,6 +35,7 @@ public class UserService {
 
         //创建实体
         User user = new User();
+        user.setRole("USER");
         user.setUsername(dto.getUsername());
 
         //加密密码
@@ -55,7 +58,7 @@ public class UserService {
             throw new RuntimeException("用户名或密码错误");
         }
         //生成token
-        String token = jwtUtil.generateToken(user.getId(), user.getUsername());
+        String token = jwtUtil.generateToken(user.getId(), user.getUsername(),user.getRole());
         //清除敏感信息
         user.setPasswordHash(null);
         // 创建 LoginVO，塞入 token 和 userInfo
@@ -63,6 +66,16 @@ public class UserService {
         loginVO.setToken(token);
         loginVO.setUserInfo(user);
         return loginVO;
+    }
+
+    //获取当前用户
+    public User getCurrentUser(){
+        UserContextDTO user = UserContext.getUser();
+        if (user.getUserId() == null){
+            throw new RuntimeException("用户未登录");
+        }
+        return userRepository.findById(user.getUserId()).orElseThrow(()
+                -> new RuntimeException("用户不存在"));
     }
 
 }

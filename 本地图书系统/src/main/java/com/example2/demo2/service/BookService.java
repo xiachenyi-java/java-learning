@@ -1,7 +1,9 @@
 package com.example2.demo2.service;
 
 import com.example2.demo2.entity.Book;
+import com.example2.demo2.entity.User;
 import com.example2.demo2.repository.BookRepository;
+import com.example2.demo2.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +28,7 @@ public class BookService {
 
 
     private final BookRepository bookRepository;
+    private final UserService userService;
 
     // 获取所有书
     public List<Book> findAll() {
@@ -35,6 +38,9 @@ public class BookService {
 
     // 加书
     public Book add(String name) {// ← 只接收一个 String，不接收 Book 实体
+        // 获取当前登录用户
+        User currentUser = userService.getCurrentUser();
+        log.info("用户 [{}] 添加图书: name={}", currentUser.getUsername(), name);
         log.info("添加图书: name={}",name);
         Integer max = bookRepository.findMaxDisplayOrder();
         Book book = new Book();
@@ -74,6 +80,7 @@ public class BookService {
         //==========================
     }
 
+    //查书
     public Book findById(Integer id) {
         log.debug("查询图书: id={}", id);  // ← 用 debug 级别
         //原因：后者在日志级别设为 WARN 时，字符串拼接已经执行了，
@@ -82,10 +89,12 @@ public class BookService {
                 .orElseThrow(() -> new RuntimeException("书不存在"));
     }
 
+    //模糊查询
     public List<Book> search(String keyword){
         return bookRepository.findByNameContaining(keyword);
     }
 
+    //分页
     public Page<Book> findPage(int page ,int size){
         Pageable pageable = PageRequest.of(page - 1,size);
         return bookRepository.findAllByOrderByDisplayOrderAsc(pageable);

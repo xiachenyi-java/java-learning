@@ -20,4 +20,7 @@ public class User {
 
     @Column(nullable = false,length = 60)
     private String passwordHash;
+
+    @Column(nullable = false)
+    private String role = "USER";//默认是用户
 }
