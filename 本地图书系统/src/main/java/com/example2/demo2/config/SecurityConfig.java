@@ -37,6 +37,7 @@ public class SecurityConfig {
                 //先关闭 CSRF（这是浏览器表单防伪造攻击的保护，我们做的是 API，先关掉方便测试）
                 .csrf(csrf ->csrf.disable())
                 //所有请求都不必要登陆
+                .logout(logout -> logout.disable())
                 .authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
         return http.build();
     }

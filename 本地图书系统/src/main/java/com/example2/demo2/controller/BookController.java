@@ -7,6 +7,7 @@ import com.example2.demo2.entity.User;
 import com.example2.demo2.service.BookService;
 import com.example2.demo2.common.Result;
 import com.example2.demo2.service.UserService;
+import com.example2.demo2.vo.BookPageVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -36,12 +37,11 @@ public class BookController {
 
     // 获取所有书
     @Operation(summary = "获取图书列表")
-    @GetMapping
-    public Result<Page<Book>> getAll(@RequestParam(defaultValue = "1")
-                                     int page, @RequestParam(defaultValue = "5")
-                                     int size
-                                     ) {
-       return Result.success(bookService.findPage(page,size));
+    @GetMapping("/books")
+    public Result<BookPageVO> getBooks(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "5") int size) {
+        return Result.success(bookService.getBooks(page, size));
     }
 
     // 找一本书

@@ -10,8 +10,12 @@ import com.example2.demo2.repository.UserRepository;
 import com.example2.demo2.vo.LoginVO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import tools.jackson.databind.ObjectMapper;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * 夏辰义
@@ -24,8 +28,14 @@ import org.springframework.stereotype.Service;
 public class UserService {
 
     private final UserRepository userRepository;
+
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+
     private final JwtUtil jwtUtil;
+
+    private final ObjectMapper objectMapper;
+
+    private final StringRedisTemplate stringRedisTemplate;
 
     public User register(UserRegisterDTO dto){
         if (userRepository.findByUsername(dto.getUsername()).isPresent()){
@@ -65,17 +75,39 @@ public class UserService {
         LoginVO loginVO = new LoginVO();
         loginVO.setToken(token);
         loginVO.setUserInfo(user);
+
+        String userJson = objectMapper.writeValueAsString(user);
         return loginVO;
     }
 
     //获取当前用户
     public User getCurrentUser(){
+        //1.获取ThreadLocal用户
         UserContextDTO user = UserContext.getUser();
         if (user.getUserId() == null){
             throw new RuntimeException("用户未登录");
         }
-        return userRepository.findById(user.getUserId()).orElseThrow(()
+        long userId = user.getUserId();
+
+        //2. 查 Redis 缓存
+        String key ="user:info:" + userId;
+        String userJson = stringRedisTemplate.opsForValue().get(key);
+        if (userJson != null){
+            // 缓存命中，JSON 反序列化后直接返回
+            return objectMapper.readValue(userJson, User.class);
+        }
+
+        // 3.缓存未命中，查数据库
+        User dbUser = userRepository.findById(user.getUserId()).orElseThrow(()
                 -> new RuntimeException("用户不存在"));
+        // 4. 写入 Redis（设置过期时间，防止永久驻留）
+        stringRedisTemplate.opsForValue().set(
+                key,
+                objectMapper.writeValueAsString(dbUser),// Jackson
+                30,
+                TimeUnit.MINUTES
+        );
+        return dbUser;
     }
 
 }

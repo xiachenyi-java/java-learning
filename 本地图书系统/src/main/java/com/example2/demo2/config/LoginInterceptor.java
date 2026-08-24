@@ -8,6 +8,7 @@ import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -23,6 +24,8 @@ import java.io.IOException;
 public class LoginInterceptor implements HandlerInterceptor {
 
     private final JwtUtil jwtUtil;
+
+    private final StringRedisTemplate stringRedisTemplate;
 
     @Override
     public boolean preHandle(HttpServletRequest request,
@@ -45,6 +48,12 @@ public class LoginInterceptor implements HandlerInterceptor {
             jwtUtil.parseToken(token);
         }catch (Exception e){
             writeUnauthorized(response);
+            return false;
+        }
+        String blacklistKey = "blacklist:token:" + token;
+        Boolean isBlacklisted = stringRedisTemplate.hasKey(blacklistKey);
+        if (Boolean.TRUE.equals(isBlacklisted)) {
+            writeUnauthorized(response);  // 返回 401
             return false;
         }
         Claims claims = jwtUtil.parseToken(token);

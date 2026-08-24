@@ -8,16 +8,21 @@ import com.example2.demo2.entity.User;
 import com.example2.demo2.service.UserService;
 import com.example2.demo2.vo.LoginVO;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Size;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.security.Key;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 夏辰义
@@ -30,6 +35,8 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class UserController {
     private final UserService userService;
+
+    private final StringRedisTemplate stringRedisTemplate;
 
     @Operation(summary = "用户注册")
     @PostMapping("/register")
@@ -44,7 +51,10 @@ public class UserController {
         return Result.success(userService.login(dto));
     }
 
-    @Operation(summary = "用户登出")
+    @Operation(
+            summary = "用户登出",
+            security = @SecurityRequirement(name = "BearerAuth")  // 告诉 Swagger 这个接口需要 Bearer token
+    )
     @PostMapping("/logout")
     public Result<Void> logout(HttpServletRequest request){
         String token = request.getHeader("Authorization");
@@ -52,6 +62,8 @@ public class UserController {
             token = token.substring(7);
         }
         log.info("用户登出: userId={}", UserContext.getUser().getUserId());
+        String key = "blacklist:token:" +token;
+        stringRedisTemplate.opsForValue().set(key,"logout",120, TimeUnit.MINUTES);
         return Result.success();
     }
 }

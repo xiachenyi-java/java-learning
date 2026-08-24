@@ -4,9 +4,12 @@ import com.example2.demo2.entity.Book;
 import com.example2.demo2.entity.User;
 import com.example2.demo2.repository.BookRepository;
 import com.example2.demo2.repository.UserRepository;
+import com.example2.demo2.vo.BookPageVO;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -37,6 +40,7 @@ public class BookService {
     }
 
     // 加书
+    @CacheEvict(value = "books", allEntries = true)
     public Book add(String name) {// ← 只接收一个 String，不接收 Book 实体
         // 获取当前登录用户
         User currentUser = userService.getCurrentUser();
@@ -50,6 +54,7 @@ public class BookService {
     }
 
     // 修改书
+    @CacheEvict(value = "books", allEntries = true)
     public Book update(Integer id ,String name){
         Book book = bookRepository.findById(id).orElseThrow(() -> new RuntimeException("书不存在"));//找到书
         //bookRepository.findById(id) 返回什么？
@@ -61,6 +66,7 @@ public class BookService {
     }
 
     //删除书
+    @CacheEvict(value = "books", allEntries = true)
     @Transactional//给删除加一个事务，防止删除一半数据库崩了
     public void delete(Integer id){
         log.info("删除图书: id={}",id);
@@ -95,9 +101,12 @@ public class BookService {
     }
 
     //分页
-    public Page<Book> findPage(int page ,int size){
-        Pageable pageable = PageRequest.of(page - 1,size);
-        return bookRepository.findAllByOrderByDisplayOrderAsc(pageable);
+    @Cacheable(value = "books", key = "#pageNum + '-' + #pageSize")
+    public BookPageVO getBooks(int pageNum, int pageSize) {
+        Page<Book> page = bookRepository.findAll(
+                PageRequest.of(pageNum - 1, pageSize)
+        );
+        return BookPageVO.of(page);
     }
 
 }
